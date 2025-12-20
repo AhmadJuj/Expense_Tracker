@@ -1,0 +1,30 @@
+services:
+  # Backend API
+  - type: web
+    name: expense-tracker-api
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: NODE_ENV
+        value: production
+
+  # Frontend
+  - type: web
+    name: expense-tracker-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: ./client/dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false

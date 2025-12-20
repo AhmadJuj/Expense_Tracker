@@ -14,14 +14,20 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CLIENT_URL || 'http://localhost:5174',
+  credentials: true
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
+app.get('/', (req, res) => {
+  res.json({ message: 'Expense Tracker API is running' });
+});
+
 app.use('/api/expenses', expenseRoutes);
-
-
 
 // Error handling
 app.use(errorHandler);
