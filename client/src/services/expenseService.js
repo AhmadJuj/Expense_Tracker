@@ -49,4 +49,6 @@ export const expenseService = {
     const response = await axios.get(`${API_URL}/stats?${params}`);
     return response.data;
   }
+
+
 };

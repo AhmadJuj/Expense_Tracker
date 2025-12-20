@@ -92,6 +92,7 @@ function ExpenseTracker() {
               setTimeout(() => setEditingExpense(null), 200);
             }
           }}
+        
           onSubmit={handleFormSubmit}
           initialData={editingExpense}
           expenses={expenses}
@@ -100,7 +101,8 @@ function ExpenseTracker() {
         <Toaster />
       </div>
     </div>
-  );
+  
+);
 }
 
 export default ExpenseTracker;
