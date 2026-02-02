@@ -1,13 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import {
   getAllExpenses,
   getExpense,
   createExpense,
   updateExpense,
   deleteExpense,
   getExpenseStats
-} = require('../controllers/expenseController');
+} from '../controllers/expenseController.js';
+
+const router = express.Router();
 
 router.route('/')
   .get(getAllExpenses)
@@ -21,4 +22,4 @@ router.route('/:id')
   .put(updateExpense)
   .delete(deleteExpense);
 
-module.exports = router;
+export default router;

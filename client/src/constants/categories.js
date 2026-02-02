@@ -17,3 +17,7 @@ export const CATEGORY_COLORS = {
   Healthcare: '#FF8ED4',
   Other: '#95A5A6'
 };
+
+export const getCategoryColor = (category) => {
+  return CATEGORY_COLORS[category] || '#6B7280';
+};

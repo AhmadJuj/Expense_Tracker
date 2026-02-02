@@ -9,6 +9,7 @@ export const expenseService = {
     if (filters.startDate) params.append('startDate', filters.startDate);
     if (filters.endDate) params.append('endDate', filters.endDate);
     if (filters.category) params.append('category', filters.category);
+  
     
     const response = await axios.get(`${API_URL}?${params}`);
     return response.data;
@@ -43,6 +44,7 @@ export const expenseService = {
     const params = new URLSearchParams();
     if (filters.startDate) params.append('startDate', filters.startDate);
     if (filters.endDate) params.append('endDate', filters.endDate);
+    
     
     const response = await axios.get(`${API_URL}/stats?${params}`);
     return response.data;

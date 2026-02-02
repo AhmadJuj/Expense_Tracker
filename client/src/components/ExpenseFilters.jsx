@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,10 +13,27 @@ import { Card, CardContent } from '@/components/ui/card';
 import { EXPENSE_CATEGORIES } from '@/constants/categories';
 import { X } from 'lucide-react';
 
-export function ExpenseFilters({ filters, onFilterChange }) {
+export function ExpenseFilters({ filters, onFilterChange, expenses = [] }) {
   const [startDate, setStartDate] = useState(filters.startDate || '');
   const [endDate, setEndDate] = useState(filters.endDate || '');
   const [category, setCategory] = useState(filters.category || '');
+
+  // Get unique categories from expenses, excluding 'Other' and including custom categories
+  const availableCategories = useMemo(() => {
+    const uniqueCategories = new Set();
+    
+    // Add predefined categories except 'Other'
+    EXPENSE_CATEGORIES.filter(cat => cat !== 'Other').forEach(cat => uniqueCategories.add(cat));
+    
+    // Add custom categories from expenses
+    expenses.forEach(expense => {
+      if (expense.category && !EXPENSE_CATEGORIES.includes(expense.category)) {
+        uniqueCategories.add(expense.category);
+      }
+    });
+    
+    return Array.from(uniqueCategories).sort();
+  }, [expenses]);
 
   const handleApply = () => {
     onFilterChange({ startDate, endDate, category });
@@ -32,9 +49,9 @@ export function ExpenseFilters({ filters, onFilterChange }) {
   const hasActiveFilters = startDate || endDate || category;
 
   return (
-    <Card className="mb-6">
-      <CardContent className="pt-6">
-        <div className="grid gap-4 md:grid-cols-4">
+    <Card className="mb-4 sm:mb-6">
+      <CardContent className="pt-4 sm:pt-6 pb-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           <div className="grid gap-2">
             <Label htmlFor="start-date">Start Date</Label>
             <Input
@@ -57,13 +74,13 @@ export function ExpenseFilters({ filters, onFilterChange }) {
 
           <div className="grid gap-2">
             <Label htmlFor="category-filter">Category</Label>
-            <Select value={category} onValueChange={setCategory}>
+            <Select value={category || 'all'} onValueChange={(value) => setCategory(value === 'all' ? '' : value)}>
               <SelectTrigger id="category-filter">
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All categories</SelectItem>
-                {EXPENSE_CATEGORIES.map((cat) => (
+                <SelectItem value="all">All categories</SelectItem>
+                {availableCategories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
                   </SelectItem>
@@ -72,7 +89,7 @@ export function ExpenseFilters({ filters, onFilterChange }) {
             </Select>
           </div>
 
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-2 sm:col-span-2 md:col-span-1">
             <Button onClick={handleApply} className="flex-1">
               Apply Filters
             </Button>

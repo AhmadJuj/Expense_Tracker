@@ -1,9 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const connectDB = require('./config/database');
-const expenseRoutes = require('./routes/expenseRoutes');
-const errorHandler = require('./middleware/errorHandler');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import connectDB from './config/database.js';
+import expenseRoutes from './routes/expenseRoutes.js';
+import errorHandler from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -21,10 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/expenses', expenseRoutes);
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Server is running' });
-});
+
 
 // Error handling
 app.use(errorHandler);

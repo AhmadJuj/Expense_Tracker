@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const expenseSchema = new mongoose.Schema({
   amount: {
@@ -9,7 +9,6 @@ const expenseSchema = new mongoose.Schema({
   category: {
     type: String,
     required: [true, 'Please provide a category'],
-    enum: ['Food', 'Transport', 'Entertainment', 'Shopping', 'Bills', 'Healthcare', 'Other'],
     trim: true
   },
   description: {
@@ -30,4 +29,4 @@ const expenseSchema = new mongoose.Schema({
 expenseSchema.index({ date: -1 });
 expenseSchema.index({ category: 1 });
 
-module.exports = mongoose.model('Expense', expenseSchema);
+export default mongoose.model('Expense', expenseSchema);

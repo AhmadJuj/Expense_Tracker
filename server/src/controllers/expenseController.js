@@ -1,19 +1,19 @@
-const Expense = require('../models/Expense');
+import Expense from '../models/Expense.js';
 
-// Get all expenses
-exports.getAllExpenses = async (req, res, next) => {
+
+export const getAllExpenses = async (req, res, next) => {
   try {
     const { startDate, endDate, category } = req.query;
     let query = {};
 
-    // Filter by date range if provided
+    // Filters
     if (startDate || endDate) {
       query.date = {};
       if (startDate) query.date.$gte = new Date(startDate);
       if (endDate) query.date.$lte = new Date(endDate);
     }
 
-    // Filter by category if provided
+
     if (category) {
       query.category = category;
     }
@@ -30,8 +30,8 @@ exports.getAllExpenses = async (req, res, next) => {
   }
 };
 
-// Get single expense
-exports.getExpense = async (req, res, next) => {
+
+export const getExpense = async (req, res, next) => {
   try {
     const expense = await Expense.findById(req.params.id);
 
@@ -51,8 +51,8 @@ exports.getExpense = async (req, res, next) => {
   }
 };
 
-// Create expense
-exports.createExpense = async (req, res, next) => {
+
+export const createExpense = async (req, res, next) => {
   try {
     const expense = await Expense.create(req.body);
 
@@ -65,8 +65,8 @@ exports.createExpense = async (req, res, next) => {
   }
 };
 
-// Update expense
-exports.updateExpense = async (req, res, next) => {
+
+export const updateExpense = async (req, res, next) => {
   try {
     const expense = await Expense.findByIdAndUpdate(
       req.params.id,
@@ -93,8 +93,8 @@ exports.updateExpense = async (req, res, next) => {
   }
 };
 
-// Delete expense
-exports.deleteExpense = async (req, res, next) => {
+
+export const deleteExpense = async (req, res, next) => {
   try {
     const expense = await Expense.findByIdAndDelete(req.params.id);
 
@@ -114,8 +114,8 @@ exports.deleteExpense = async (req, res, next) => {
   }
 };
 
-// Get expense statistics
-exports.getExpenseStats = async (req, res, next) => {
+
+export const getExpenseStats = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
     let matchQuery = {};
@@ -152,4 +152,13 @@ exports.getExpenseStats = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export default {
+  getAllExpenses,
+  getExpense,
+  createExpense,
+  updateExpense,
+  deleteExpense,
+  getExpenseStats
 };

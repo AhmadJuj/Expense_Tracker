@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,8 +20,27 @@ import {
 } from '@/components/ui/dialog';
 import { EXPENSE_CATEGORIES } from '@/constants/categories';
 
-export function ExpenseForm({ open, onOpenChange, onSubmit, initialData = null }) {
+export function ExpenseForm({ open, onOpenChange, onSubmit, initialData = null, expenses = [] }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [customCategory, setCustomCategory] = useState('');
+  
+  // Get available categories: predefined (except Other) + custom categories + Other at the end
+  const availableCategories = useMemo(() => {
+    const customCategories = new Set();
+    
+    // Extract custom categories from expenses
+    expenses.forEach(expense => {
+      if (expense.category && !EXPENSE_CATEGORIES.includes(expense.category)) {
+        customCategories.add(expense.category);
+      }
+    });
+    
+    // Combine: predefined (without Other) + sorted custom + Other at end
+    const predefined = EXPENSE_CATEGORIES.filter(cat => cat !== 'Other');
+    const custom = Array.from(customCategories).sort();
+    
+    return [...predefined, ...custom, 'Other'];
+  }, [expenses]);
   
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
     defaultValues: initialData || {
@@ -34,15 +53,35 @@ export function ExpenseForm({ open, onOpenChange, onSubmit, initialData = null }
 
   const category = watch('category');
 
+  useEffect(() => {
+    if (initialData) {
+      const isCustomCategory = !EXPENSE_CATEGORIES.includes(initialData.category);
+      if (isCustomCategory) {
+        setValue('category', 'Other');
+        setCustomCategory(initialData.category);
+      } else {
+        setValue('category', initialData.category);
+      }
+      setValue('description', initialData.description || '');
+      setValue('date', initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+    }
+  }, [initialData, setValue]);
+
   const handleFormSubmit = async (data) => {
     setIsLoading(true);
-    await onSubmit(data);
+    const submitData = { 
+      ...data, 
+      category: category === 'Other' && customCategory ? customCategory : data.category 
+    };
+    await onSubmit(submitData);
     setIsLoading(false);
     reset();
+    setCustomCategory('');
   };
 
   const handleClose = () => {
     reset();
+    setCustomCategory('');
     onOpenChange(false);
   };
 
@@ -84,7 +123,7 @@ export function ExpenseForm({ open, onOpenChange, onSubmit, initialData = null }
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {EXPENSE_CATEGORIES.map((cat) => (
+                  {availableCategories.map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
                     </SelectItem>
@@ -95,6 +134,18 @@ export function ExpenseForm({ open, onOpenChange, onSubmit, initialData = null }
                 <p className="text-sm text-destructive">{errors.category.message}</p>
               )}
             </div>
+
+            {category === 'Other' && (
+              <div className="grid gap-2">
+                <Label htmlFor="customCategory">Custom Category Name</Label>
+                <Input
+                  id="customCategory"
+                  placeholder="Enter category name"
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                />
+              </div>
+            )}
 
             <div className="grid gap-2">
               <Label htmlFor="description">Description (Optional)</Label>

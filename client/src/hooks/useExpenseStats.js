@@ -6,22 +6,22 @@ export function useExpenseStats(filters = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setLoading(true);
-        const response = await expenseService.getStats(filters);
-        setStats(response.data);
-        setError(null);
-      } catch (err) {
-        setError(err.response?.data?.error || 'Failed to fetch statistics');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const response = await expenseService.getStats(filters);
+      setStats(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to fetch statistics');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchStats();
   }, [JSON.stringify(filters)]);
 
-  return { stats, loading, error };
+  return { stats, loading, error, refresh: fetchStats };
 }
